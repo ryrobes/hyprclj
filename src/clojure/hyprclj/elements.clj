@@ -55,6 +55,40 @@
     (.setAlign element (name align)))
   element)
 
+(defn set-size!
+  "Set the size of an element.
+   Can be called with:
+     (set-size! el 400 300)           ; width height
+     (set-size! el [400 300])         ; [width height]
+   Use -1 for auto-sizing in either dimension."
+  ([element size-vec]
+   (let [[w h] size-vec]
+     (set-size! element w h)))
+  ([element width height]
+   (.setSize element width height)
+   element))
+
+(defn set-position-mode!
+  "Set position mode for an element.
+   Modes:
+     0 = absolute positioning
+     1 = auto (default, layout-based)"
+  [element mode]
+  (.setPositionMode element mode)
+  element)
+
+(defn set-absolute-position!
+  "Set absolute position offset from parent.
+   Usage:
+     (set-absolute-position! el 10 20)  ; x y
+     (set-absolute-position! el [10 20]) ; [x y]"
+  ([element pos-vec]
+   (let [[x y] pos-vec]
+     (set-absolute-position! element x y)))
+  ([element x y]
+   (.setAbsolutePosition element x y)
+   element))
+
 ;; Button
 (defn button
   "Create a button element.

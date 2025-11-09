@@ -5,6 +5,7 @@
 #include <hyprtoolkit/element/ColumnLayout.hpp>
 #include <hyprtoolkit/element/RowLayout.hpp>
 #include <hyprutils/math/Vector2D.hpp>
+#include <hyprutils/math/Box.hpp>
 
 using namespace Hyprtoolkit;
 using Hyprutils::Math::Vector2D;
@@ -155,6 +156,21 @@ Java_org_hyprclj_bindings_Element_nativeSetGrowBoth(
 }
 
 JNIEXPORT void JNICALL
+Java_org_hyprclj_bindings_Element_nativeSetSize(
+    JNIEnv* env, jobject obj, jlong handle, jint width, jint height) {
+
+    auto element = *reinterpret_cast<Hyprutils::Memory::CSharedPointer<IElement>*>(handle);
+    if (!element) return;
+
+    // Use reposition to set the element's size
+    // Create a box at origin with the specified size
+    Hyprutils::Math::CBox box{0, 0, (double)width, (double)height};
+    Vector2D maxSize{(double)width, (double)height};
+
+    element->reposition(box, maxSize);
+}
+
+JNIEXPORT void JNICALL
 Java_org_hyprclj_bindings_Element_nativeSetAlign(
     JNIEnv* env, jobject obj, jlong handle, jstring align) {
 
@@ -181,6 +197,26 @@ Java_org_hyprclj_bindings_Element_nativeSetAlign(
     } else if (alignStr == "bottom") {
         element->setPositionFlag(IElement::HT_POSITION_FLAG_BOTTOM, true);
     }
+}
+
+JNIEXPORT void JNICALL
+Java_org_hyprclj_bindings_Element_nativeSetPositionMode(
+    JNIEnv* env, jobject obj, jlong handle, jint mode) {
+
+    auto element = *reinterpret_cast<Hyprutils::Memory::CSharedPointer<IElement>*>(handle);
+    if (!element) return;
+
+    element->setPositionMode(static_cast<IElement::ePositionMode>(mode));
+}
+
+JNIEXPORT void JNICALL
+Java_org_hyprclj_bindings_Element_nativeSetAbsolutePosition(
+    JNIEnv* env, jobject obj, jlong handle, jint x, jint y) {
+
+    auto element = *reinterpret_cast<Hyprutils::Memory::CSharedPointer<IElement>*>(handle);
+    if (!element) return;
+
+    element->setAbsolutePosition(Vector2D{(double)x, (double)y});
 }
 
 } // extern "C"

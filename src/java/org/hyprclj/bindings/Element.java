@@ -55,11 +55,37 @@ public class Element {
     }
 
     /**
+     * Set the size of the element.
+     * @param width Width in pixels (-1 for auto)
+     * @param height Height in pixels (-1 for auto)
+     */
+    public void setSize(int width, int height) {
+        nativeSetSize(nativeHandle, width, height);
+    }
+
+    /**
      * Set alignment using position flags.
      * @param align "center", "left", "right", "top", "bottom", "hcenter", "vcenter"
      */
     public void setAlign(String align) {
         nativeSetAlign(nativeHandle, align);
+    }
+
+    /**
+     * Set position mode.
+     * @param mode 0 = absolute, 1 = auto (default)
+     */
+    public void setPositionMode(int mode) {
+        nativeSetPositionMode(nativeHandle, mode);
+    }
+
+    /**
+     * Set absolute position offset from parent.
+     * @param x X offset in pixels
+     * @param y Y offset in pixels
+     */
+    public void setAbsolutePosition(int x, int y) {
+        nativeSetAbsolutePosition(nativeHandle, x, y);
     }
 
     /**
@@ -92,7 +118,10 @@ public class Element {
     private native void nativeSetMargin(long handle, int top, int right, int bottom, int left);
     private native void nativeSetGrow(long handle, boolean grow);
     private native void nativeSetGrowBoth(long handle, boolean growH, boolean growV);
+    private native void nativeSetSize(long handle, int width, int height);
     private native void nativeSetAlign(long handle, String align);
+    private native void nativeSetPositionMode(long handle, int mode);
+    private native void nativeSetAbsolutePosition(long handle, int x, int y);
     private native void nativeSetMouseClick(long handle, Consumer<MouseEvent> callback);
     private native void nativeSetMouseEnter(long handle, Consumer<MouseEvent> callback);
     private native void nativeSetMouseLeave(long handle, Consumer<MouseEvent> callback);

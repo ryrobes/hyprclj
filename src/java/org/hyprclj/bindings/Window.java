@@ -121,10 +121,24 @@ public class Window {
     }
 
     /**
+     * Interface for resize event handling.
+     */
+    public interface ResizeListener {
+        void onResize(int width, int height);
+    }
+
+    /**
      * Interface for keyboard event handling.
      */
     public interface KeyboardListener {
         void onKey(int keyCode, boolean pressed, String utf8, int modifiers);
+    }
+
+    /**
+     * Set resize event listener for this window.
+     */
+    public void setResizeListener(ResizeListener listener) {
+        nativeSetResizeCallback(nativeHandle, listener);
     }
 
     /**
@@ -139,6 +153,7 @@ public class Window {
     private native void nativeOpen(long handle);
     private native void nativeClose(long handle);
     private native int[] nativeGetSize(long handle);
+    private native void nativeSetResizeCallback(long handle, ResizeListener listener);
     private native void nativeSetKeyboardCallback(long handle, KeyboardListener listener);
 
     static {

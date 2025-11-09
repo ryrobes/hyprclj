@@ -1,6 +1,7 @@
 (ns hyprclj.core
   "Core functionality for Hyprtoolkit Clojure bindings.
    Provides backend and window management."
+  (:require [hyprclj.elements :as elem])
   (:import [org.hyprclj.bindings Backend Window]))
 
 ;; Backend management
@@ -84,11 +85,6 @@
       (.onClose builder on-close))
     (.build builder)))
 
-(defn open-window!
-  "Open a window, making it visible."
-  [window]
-  (.open window)
-  window)
 
 (defn close-window!
   "Close a window."
@@ -105,6 +101,72 @@
    All UI elements should be added as children of the root."
   [window]
   (.getRootElement window))
+
+(defn enable-responsive-root!
+  "Enable automatic UI remounting when window is resized.
+
+   Takes a component-fn that will be remounted with the new window size
+   whenever the window is resized.
+
+   Args:
+     window - The window
+     component-fn - A function that takes [width height] and returns a component spec
+
+   Example:
+     (enable-responsive-root! window
+       (fn [[w h]]
+         [:column {:gap 10}
+           [:text (str \"Window is \" w \"x\" h)]]))"
+  ([window]
+   ;; Old signature for backwards compatibility - does nothing useful
+   (println "[WARN] enable-responsive-root! called without component-fn")
+   window)
+  ([window component-fn]
+   (let [root (root-element window)
+         rendered-size (atom nil)
+         pending-size (atom nil)
+         ignore-resize? (atom false)]
+     (.setResizeListener window
+       (reify org.hyprclj.bindings.Window$ResizeListener
+         (onResize [_ width height]
+           (let [new-size [width height]]
+             (cond
+               ;; Currently ignoring - just update pending size
+               @ignore-resize?
+               (when (and (pos? width) (pos? height))
+                 (println "[RESIZE] Queued:" width "x" height)
+                 (reset! pending-size new-size))
+
+               ;; Not ignoring - process resize
+               (and (pos? width) (pos? height)
+                    (not= new-size @rendered-size))
+               (do
+                 (println "[RESIZE]" width "x" height)
+                 (reset! pending-size new-size)
+                 (reset! ignore-resize? true)
+                 (add-timer! 150
+                   (fn []
+                     (let [[w h] @pending-size]
+                       (println "[REMOUNT] To" w "x" h)
+                       (try
+                         (require 'hyprclj.dsl)
+                         (let [mount-fn (resolve 'hyprclj.dsl/mount!)]
+                           (mount-fn root (component-fn [w h]) [w h])
+                           (reset! rendered-size [w h]))
+                         (catch Exception e
+                           (println "[ERROR]" (.getMessage e)))
+                         (finally
+                           (add-timer! 50
+                             (fn []
+                               (println "[RESIZE] Re-enabled")
+                               (reset! ignore-resize? false)))))))))))))))
+     window))
+
+(defn open-window!
+  "Open a window, making it visible."
+  [window]
+  (.open window)
+  window)
 
 ;; Convenience function for running an app
 (defn run-app!

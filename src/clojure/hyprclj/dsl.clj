@@ -112,23 +112,53 @@
 (defn mount!
   "Mount a component spec into a parent element.
 
+   If window-size is provided as [width height], applies size to the root
+   layout element to enable responsive layouts.
+
    Args:
      parent - Parent element (usually window root)
      component - Hiccup spec or component function
+     window-size - Optional [width height] to set on root element
+     opts - Optional map with:
+            :position-mode - :auto (default, root centers content) or :absolute (pin to 0,0)
 
-   Example:
-     (mount! (root-element window)
-             [:column {}
-               [:text \"Hello\"]
-               [:button {:label \"Click me!\"}]])"
-  [parent component]
-  (el/clear-children! parent)
-  (let [compiled (if (fn? component)
-                   (compile-element (component))
-                   (compile-element component))]
-    (when compiled
-      (el/add-child! parent compiled)))
-  parent)
+   Examples:
+     (mount! (root-element window) [:column {} [:text \"Hello\"]])
+     (mount! (root-element window) [:column {} [:text \"Hello\"]] [800 600])
+     (mount! (root-element window) [:column {} [:text \"Hello\"]] [800 600] {:position-mode :absolute})"
+  ([parent component]
+   (el/clear-children! parent)
+   (let [compiled (if (fn? component)
+                    (compile-element (component))
+                    (compile-element component))]
+     (when compiled
+       (el/add-child! parent compiled)))
+   parent)
+  ([parent component window-size]
+   (el/clear-children! parent)
+   (if (and window-size (vector? component))
+     ;; Merge window size into the root component's props
+     (let [[tag props-or-child & rest-args] component
+           [w h] window-size
+           ;; Check if second element is a props map
+           has-props? (map? props-or-child)
+           props (if has-props? props-or-child {})
+           children (if has-props? rest-args (cons props-or-child rest-args))
+           ;; Merge size into props
+           new-props (assoc props :size [w h])
+           new-component (vec (cons tag (cons new-props children)))]
+       (let [compiled (compile-element new-component)]
+         (when compiled
+           ;; NOTE: Not forcing positioning - let user props control layout!
+           ;; Users can add :align, :margin, etc. as needed
+           (el/add-child! parent compiled))))
+     ;; No window-size or not a vector, mount normally
+     (let [compiled (if (fn? component)
+                      (compile-element (component))
+                      (compile-element component))]
+       (when compiled
+         (el/add-child! parent compiled))))
+   parent))
 
 (defn remount!
   "Re-mount a component, useful for reactive updates.

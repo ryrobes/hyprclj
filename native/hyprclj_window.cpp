@@ -117,6 +117,43 @@ Java_org_hyprclj_bindings_Window_nativeGetSize(JNIEnv* env, jobject obj, jlong h
 }
 
 JNIEXPORT void JNICALL
+Java_org_hyprclj_bindings_Window_nativeSetResizeCallback(
+    JNIEnv* env, jobject obj, jlong handle, jobject listener) {
+
+    auto window = *reinterpret_cast<Hyprutils::Memory::CSharedPointer<IWindow>*>(handle);
+    if (!window) return;
+
+    jobject globalListener = env->NewGlobalRef(listener);
+
+    // The resized signal passes Vector2D size as data - use it directly!
+    auto resizeListener = window->m_events.resized.listen([globalListener, window](const Vector2D& newSize) {
+        JNIEnv* env = getEnv();
+
+        // Use the size from the signal (this is the actual drawable size!)
+        // Also get pixelSize() for comparison
+        auto pixSize = window->pixelSize();
+        auto scale = window->scale();
+
+        // Debug: print both sizes and scale
+        printf("[C++ RESIZE] Signal size = %d x %d, pixelSize = %d x %d, scale = %.2f\n",
+               (int)newSize.x, (int)newSize.y,
+               (int)pixSize.x, (int)pixSize.y,
+               scale);
+        fflush(stdout);
+
+        // Find the ResizeListener class and call onResize
+        jclass listenerClass = env->FindClass("org/hyprclj/bindings/Window$ResizeListener");
+        jmethodID onResizeMethod = env->GetMethodID(listenerClass, "onResize", "(II)V");
+
+        // Pass the size from the signal (the actual drawable size)
+        env->CallVoidMethod(globalListener, onResizeMethod, (jint)newSize.x, (jint)newSize.y);
+    });
+
+    // Store listener to prevent it from being destroyed
+    new Hyprutils::Memory::CSharedPointer<Hyprutils::Signal::CSignalListener>(resizeListener);
+}
+
+JNIEXPORT void JNICALL
 Java_org_hyprclj_bindings_Window_nativeSetKeyboardCallback(
     JNIEnv* env, jobject obj, jlong handle, jobject listener) {
 
