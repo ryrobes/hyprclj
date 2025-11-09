@@ -6,20 +6,20 @@ Hyprclj provides idiomatic Clojure bindings to Hyprtoolkit, enabling you to writ
 
 ## Features
 
-- 🎨 **Hiccup-style DSL** - Familiar syntax for Clojure developers
-- ⚛️ **Reactive State** - Reagent-like atoms and automatic UI updates
-- 🚀 **Native Performance** - Direct JNI bindings to C++ (no webview!)
-- 🎯 **Wayland-Native** - Built for the modern Linux desktop
-- 🧩 **Composable Layouts** - Flexbox-style v-box/h-box composition
-- 📐 **Responsive Layouts** - Windows resize correctly with HiDPI support
-- 🎨 **Styled Components** - Colored backgrounds, borders, rounded corners
-- ⚡ **Optimized Reactivity** - Partial updates (only changed sections repaint)
+- **Hiccup-style DSL** - Familiar syntax for Clojure developers
+- **Reactive State** - Reagent-like atoms and automatic UI updates
+- **Native Performance** - Direct JNI bindings to C++ (no webview!)
+- **Wayland-Native** - Built for the modern Linux desktop
+- **Composable Layouts** - Flexbox-style v-box/h-box composition
+- **Responsive Layouts** - Windows resize correctly with HiDPI support
+- **Styled Components** - Colored backgrounds, borders, rounded corners
+- **Optimized Reactivity** - Partial updates (only changed sections repaint)
 
 ## Status
 
-✅ **Responsive Layouts Working!** - Window resizing now works correctly!
+**Responsive Layouts Working!** - Window resizing now works correctly!
 
-✅ **Production-Ready Features:**
+**Production-Ready Features:**
 - Responsive window layouts with proper sizing
 - Nested v-box/h-box composition (flexbox-style)
 - Colored rectangles for backgrounds and borders
@@ -27,7 +27,7 @@ Hyprclj provides idiomatic Clojure bindings to Hyprtoolkit, enabling you to writ
 - Full keyboard and mouse input support
 - Text input with inline editing
 
-⚠️ **Experimental** - This is an active POC. Some advanced features still in development.
+ **Experimental** - This is an active POC. Some advanced features still in development.
 
 ## Requirements
 
@@ -81,20 +81,20 @@ clj -J-Djava.library.path=resources -J--enable-native-access=ALL-UNNAMED -M:exam
 **Working Examples**:
 
 **Basic Examples:**
-- ✅ `simple` - Basic static UI
-- ✅ `interactive-test` - Button click testing
-- ✅ `reactive-counter` - Reactive state demo
+- `simple` - Basic static UI
+- `interactive-test` - Button click testing
+- `reactive-counter` - Reactive state demo
 
 **Responsive Layout Examples:**
-- ✅ `test-absolute-final` - Absolute positioning (top-left)
-- ✅ `test-centered-final` - Auto-layout positioning (centered)
-- ✅ `nesting-fully-responsive` - Nested v-box/h-box layouts
-- ✅ `best-practice-layout` - Complete app with border separators
+- `test-absolute-final` - Absolute positioning (top-left)
+- `test-centered-final` - Auto-layout positioning (centered)
+- `nesting-fully-responsive` - Nested v-box/h-box layouts
+- `best-practice-layout` - Complete app with border separators
 
 **Advanced Examples:**
-- ✅ `todo-fixed` - Full TODO app with colors, inline editing, optimized reactivity
-- ✅ `colored-buttons-test` - Colored button demonstration
-- ✅ `children-prop-test` - :children prop for programmatic UI
+- `todo-fixed` - Full TODO app with colors, inline editing, optimized reactivity
+- `colored-buttons-test` - Colored button demonstration
+- `children-prop-test` - :children prop for programmatic UI
 
 All examples support proper window closing with Hyprland's close command (`Mod+Shift+C`)!
 
@@ -348,20 +348,20 @@ clj -M:test
 
 ## Recent Improvements
 
-### ✅ Responsive Layouts (FIXED!)
+### Responsive Layouts (FIXED!)
 - Window resize events properly handled
 - Correct drawable area sizing (accounts for HiDPI scaling)
 - Loop protection prevents infinite remount cycles
 - Supports both absolute and auto-layout positioning
 
-### ✅ Layout System
+### Layout System
 - Flexbox-style v-box/h-box composition
 - Deep nesting support
 - Border separators with colors and opacity
 - Colored backgrounds via Rectangle element
 - :children prop for clean programmatic UI generation
 
-### ✅ Styling & Visual Design
+### Styling & Visual Design
 - Rectangle element with colors, borders, rounding
 - Semi-transparent colors via alpha channel [r g b alpha]
 - Colored button backgrounds (via layering)
@@ -386,10 +386,6 @@ clj -M:test
 - [ ] Tests
 - [ ] Package as library
 
-## Contributing
-
-This is a POC! Contributions, ideas, and feedback are welcome.
-
 ## License
 
 To be determined (likely follows Hyprtoolkit's BSD-3-Clause)
@@ -400,6 +396,4 @@ To be determined (likely follows Hyprtoolkit's BSD-3-Clause)
 - [Reagent](https://reagent-project.github.io/) - Inspiration for reactive model
 - [Re-com](https://github.com/day8/re-com) - Inspiration for component DSL
 
----
 
-**Built with 💜 for the Hyprland community**
