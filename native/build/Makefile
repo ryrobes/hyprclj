@@ -318,6 +318,30 @@ hyprclj_rectangle.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/hyprclj.dir/build.make CMakeFiles/hyprclj.dir/hyprclj_rectangle.cpp.s
 .PHONY : hyprclj_rectangle.cpp.s
 
+hyprclj_scrollarea.o: hyprclj_scrollarea.cpp.o
+.PHONY : hyprclj_scrollarea.o
+
+# target to build an object file
+hyprclj_scrollarea.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/hyprclj.dir/build.make CMakeFiles/hyprclj.dir/hyprclj_scrollarea.cpp.o
+.PHONY : hyprclj_scrollarea.cpp.o
+
+hyprclj_scrollarea.i: hyprclj_scrollarea.cpp.i
+.PHONY : hyprclj_scrollarea.i
+
+# target to preprocess a source file
+hyprclj_scrollarea.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/hyprclj.dir/build.make CMakeFiles/hyprclj.dir/hyprclj_scrollarea.cpp.i
+.PHONY : hyprclj_scrollarea.cpp.i
+
+hyprclj_scrollarea.s: hyprclj_scrollarea.cpp.s
+.PHONY : hyprclj_scrollarea.s
+
+# target to generate assembly for a file
+hyprclj_scrollarea.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/hyprclj.dir/build.make CMakeFiles/hyprclj.dir/hyprclj_scrollarea.cpp.s
+.PHONY : hyprclj_scrollarea.cpp.s
+
 hyprclj_text.o: hyprclj_text.cpp.o
 .PHONY : hyprclj_text.o
 
@@ -421,6 +445,9 @@ help:
 	@echo "... hyprclj_rectangle.o"
 	@echo "... hyprclj_rectangle.i"
 	@echo "... hyprclj_rectangle.s"
+	@echo "... hyprclj_scrollarea.o"
+	@echo "... hyprclj_scrollarea.i"
+	@echo "... hyprclj_scrollarea.s"
 	@echo "... hyprclj_text.o"
 	@echo "... hyprclj_text.i"
 	@echo "... hyprclj_text.s"

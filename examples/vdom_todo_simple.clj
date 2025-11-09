@@ -17,13 +17,17 @@
              :on-click #(swap! app-state update :count inc)}]])
 
 (defn -main [& args]
-  (println "Minimal VDOM TODO test")
+  (println "Starting...")
 
-  (vdom/run-app!
-    app-state
-    render-app
-    {:title "VDOM TODO Simple"
-     :size [500 300]
-     :on-close (fn [_] (util/exit-clean!))}))
+  (try
+    (vdom/run-app!
+      app-state
+      render-app
+      {:title "VDOM TODO Simple"
+       :size [500 300]
+       :on-close (fn [_] (util/exit-clean!))})
+    (catch Exception e
+      (println "Error:" (.getMessage e))
+      (.printStackTrace e))))
 
 (comment (-main))

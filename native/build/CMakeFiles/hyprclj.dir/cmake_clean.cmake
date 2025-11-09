@@ -14,6 +14,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/hyprclj.dir/hyprclj_layouts.cpp.o.d"
   "CMakeFiles/hyprclj.dir/hyprclj_rectangle.cpp.o"
   "CMakeFiles/hyprclj.dir/hyprclj_rectangle.cpp.o.d"
+  "CMakeFiles/hyprclj.dir/hyprclj_scrollarea.cpp.o"
+  "CMakeFiles/hyprclj.dir/hyprclj_scrollarea.cpp.o.d"
   "CMakeFiles/hyprclj.dir/hyprclj_text.cpp.o"
   "CMakeFiles/hyprclj.dir/hyprclj_text.cpp.o.d"
   "CMakeFiles/hyprclj.dir/hyprclj_textbox.cpp.o"

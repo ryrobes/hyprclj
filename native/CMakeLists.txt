@@ -32,6 +32,7 @@ set(SOURCES
     hyprclj_textbox.cpp
     hyprclj_checkbox.cpp
     hyprclj_rectangle.cpp
+    hyprclj_scrollarea.cpp
 )
 
 # Create shared library
