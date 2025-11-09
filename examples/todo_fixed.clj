@@ -212,17 +212,17 @@
          (reactive-mount! debug-c [todos]
                           (fn []
             ;[:rectangle {:color [255 255 255 0] :border 2 :size [600 300]}  ; Transparent background to avoid clipping
-                            [:v-box {:gap 5 :size [600 100]
+                            [:v-box {:gap 3 :size [600 100]
                       ;:background [50 100 50 150]    ; Green-ish
                       ;:border-color [100 255 100 255]
-                      ;:color [0 0 0 255]
+                      :color [0 0 0 255]
                       ;:border 2
              ;[:text {:content "DEBUG: Raw todos atom (updates live!):" :font-size 9}]
              ;[:text {:content (pr-str @todos) :font-size 7}]
                                      :children
                                      (vec
                                       (for [t @todos]
-                                        [:text {:content (pr-str t) :font-size 7}]))}])))
+                                        [:text {:content (pr-str t) :font-size 17  }]))}])))
 
        ;; Add main column to root
        (el/add-child! root main-col)])

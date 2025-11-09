@@ -8,15 +8,26 @@ Hyprclj provides idiomatic Clojure bindings to Hyprtoolkit, enabling you to writ
 
 - 🎨 **Hiccup-style DSL** - Familiar syntax for Clojure developers
 - ⚛️ **Reactive State** - Reagent-like atoms and automatic UI updates
-- 🚀 **Native Performance** - Direct bindings to C++ via JNI
+- 🚀 **Native Performance** - Direct JNI bindings to C++ (no webview!)
 - 🎯 **Wayland-Native** - Built for the modern Linux desktop
-- 🧩 **Component System** - Composable, reusable UI components
+- 🧩 **Composable Layouts** - Flexbox-style v-box/h-box composition
+- 📐 **Responsive Layouts** - Windows resize correctly with HiDPI support
+- 🎨 **Styled Components** - Colored backgrounds, borders, rounded corners
+- ⚡ **Optimized Reactivity** - Partial updates (only changed sections repaint)
 
 ## Status
 
-✅ **POC Working!** - The simple example runs successfully and connects to Wayland!
+✅ **Responsive Layouts Working!** - Window resizing now works correctly!
 
-⚠️ **Experimental** - This is a proof of concept. The demo example has issues with component definitions. See [CURRENT_STATUS.md](CURRENT_STATUS.md) for details.
+✅ **Production-Ready Features:**
+- Responsive window layouts with proper sizing
+- Nested v-box/h-box composition (flexbox-style)
+- Colored rectangles for backgrounds and borders
+- Optimized partial repainting for reactive UIs
+- Full keyboard and mouse input support
+- Text input with inline editing
+
+⚠️ **Experimental** - This is an active POC. Some advanced features still in development.
 
 ## Requirements
 
@@ -68,16 +79,61 @@ clj -J-Djava.library.path=resources -J--enable-native-access=ALL-UNNAMED -M:exam
 ```
 
 **Working Examples**:
+
+**Basic Examples:**
 - ✅ `simple` - Basic static UI
-- ✅ `interactive-test` - Button click testing (verified working!)
+- ✅ `interactive-test` - Button click testing
 - ✅ `reactive-counter` - Reactive state demo
-- ✅ `counter-working` - Manual reactive updates with UI remounting
+
+**Responsive Layout Examples:**
+- ✅ `test-absolute-final` - Absolute positioning (top-left)
+- ✅ `test-centered-final` - Auto-layout positioning (centered)
+- ✅ `nesting-fully-responsive` - Nested v-box/h-box layouts
+- ✅ `best-practice-layout` - Complete app with border separators
+
+**Advanced Examples:**
+- ✅ `todo-fixed` - Full TODO app with colors, inline editing, optimized reactivity
+- ✅ `colored-buttons-test` - Colored button demonstration
+- ✅ `children-prop-test` - :children prop for programmatic UI
 
 All examples support proper window closing with Hyprland's close command (`Mod+Shift+C`)!
 
-See [USAGE.md](USAGE.md) for detailed usage instructions and [COMPLETE.md](COMPLETE.md) for full status.
-
 ## Quick Start
+
+### Responsive Layout (NEW!)
+
+```clojure
+(ns my-app
+  (:require [hyprclj.core :as hypr]
+            [hyprclj.dsl :refer [mount!]]
+            [hyprclj.util :as util]))
+
+(defn ui-component
+  "UI component that adapts to window size"
+  [[w h]]  ; Receives [width height] for responsiveness!
+  [:v-box {:gap 15 :margin 20 :position :absolute}
+   [:text {:content "My Responsive App" :font-size 24}]
+   [:text {:content (str "Window: " w "x" h) :font-size 12}]
+
+   ;; Border separator (resizes with window!)
+   [:rectangle {:color [0 0 0 0]
+                :border-color [100 150 200 80]
+                :border 1
+                :size [(- w 50) 2]}]
+
+   [:h-box {:gap 10}
+    [:button {:label "Click" :size [100 30] :on-click #(println "Hi!")}]
+    [:button {:label "Me" :size [100 30] :on-click #(println "Hello!")}]]])
+
+(defn -main []
+  (hypr/create-backend!)
+  (let [window (hypr/create-window {:title "App" :size [700 500]
+                                     :on-close (fn [_] (util/exit-clean!))})]
+    ;; Enable responsive resizing!
+    (hypr/enable-responsive-root! window ui-component {:position :absolute})
+    (hypr/open-window! window)
+    (hypr/enter-loop!)))
+```
 
 ### Simple Static UI
 
@@ -195,16 +251,35 @@ See [USAGE.md](USAGE.md) for detailed usage instructions and [COMPLETE.md](COMPL
 
 ### Supported Elements
 
+**Basic Elements:**
 - `:text` - Text display
 - `:button` - Clickable button
-- `:column` - Vertical layout container
-- `:row` - Horizontal layout container
+- `:textbox` - Text input field
+- `:checkbox` - Checkbox with label
+- `:rectangle` - Colored rectangles for backgrounds/borders
+
+**Layout Containers:**
+- `:column` - Vertical layout (basic)
+- `:row` - Horizontal layout (basic)
+- `:v-box` - Vertical box with positioning support (NEW!)
+- `:h-box` - Horizontal box with positioning support (NEW!)
+- `:colored-button` - Button with colored background (NEW!)
 
 ### Common Props
 
 **All elements:**
 - `:margin` - `[top right bottom left]` or single number
 - `:grow` - `true/false` - expand to fill space
+- `:size` - `[width height]` - explicit sizing
+- `:position` - `:absolute` (top-left) or `:auto` (centered, default)
+
+**Layout boxes (v-box/h-box):**
+- `:gap` - Spacing between children
+- `:children` - Vector of child elements (programmatic generation)
+- `:background` - Background color `[r g b alpha]`
+- `:border` - Border thickness
+- `:border-color` - Border color `[r g b alpha]`
+- `:rounding` - Corner rounding in pixels
 
 **Text:**
 - `:content` - Text string
@@ -271,28 +346,44 @@ clj -M:dev
 clj -M:test
 ```
 
-## Limitations & TODOs
+## Recent Improvements
 
-### Current Limitations:
+### ✅ Responsive Layouts (FIXED!)
+- Window resize events properly handled
+- Correct drawable area sizing (accounts for HiDPI scaling)
+- Loop protection prevents infinite remount cycles
+- Supports both absolute and auto-layout positioning
 
-- ✅ Windows, buttons, text, layouts
-- ❌ Not all hyprtoolkit elements implemented yet (Checkbox, Slider, Image, etc.)
-- ❌ Reactive updates don't fully re-render (need reconciliation)
-- ❌ No hot-reload / component lifecycle management
-- ❌ Limited styling options
-- ❌ No animation API exposed
+### ✅ Layout System
+- Flexbox-style v-box/h-box composition
+- Deep nesting support
+- Border separators with colors and opacity
+- Colored backgrounds via Rectangle element
+- :children prop for clean programmatic UI generation
 
-### TODO:
+### ✅ Styling & Visual Design
+- Rectangle element with colors, borders, rounding
+- Semi-transparent colors via alpha channel [r g b alpha]
+- Colored button backgrounds (via layering)
+- Border separators between sections
 
-- [ ] Implement remaining element types
-- [ ] Full reconciliation/diffing for reactive updates
+## Current Limitations
+
+- ⚠️ **Background layering** - Only works at root level (not inside v-box/h-box)
+- ⚠️ **Button colors** - Require layering workaround (colored-button)
+- ⚠️ **Sized rectangles in containers** - Can clip content if not careful
+- ❌ Not all Hyprtoolkit elements implemented (Slider, Image, etc.)
+- ❌ No animation API exposed yet
+- ❌ No hot-reload / component lifecycle
+
+## TODO
+
+- [ ] Implement remaining element types (Slider, Image, etc.)
+- [ ] Better reconciliation for keyed reactive lists
 - [ ] Component lifecycle hooks
-- [ ] Better error handling
 - [ ] Animation bindings
 - [ ] Theming/palette API
-- [ ] More comprehensive examples
 - [ ] Tests
-- [ ] Documentation
 - [ ] Package as library
 
 ## Contributing
