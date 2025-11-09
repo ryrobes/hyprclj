@@ -1,0 +1,26 @@
+
+{11/09/25 12:15am}
+TODO after full reconsil:
+
+//- checkboxes
+- bounding boxes for layout items toggle?
+- better layout primitives
+    - h-box, v-box, box...?
+    - more hiccup'y?
+    - css styling?
+- backgrounds, colors, fonts, etc
+- lein tests that actually run through UI calls and logs the internal state?
+    - can we automate atom changes and have it reflected in the U?
+
+- deploy as a linked/embedded bin
+
+----
+- rewindex as a simple hyprapp client?
+- building it into a native file explorer for hypr/omarchy?
+    - or at least a hyprpm?
+
+---
+
+"REWINDex". WIP Elastic-based $HOME full-text search indexer & "time-travel" system (restore, diff file changes, temporal search). Easy installable via curl|bash. Auto-watches / Indexes. Reqs Docker (installer handles both user-space & root installs). Extras for Omarchy/Hyprland Walker systems (inculding full Omarchy theme support) - but *should* work on any systemd...
+
+Cascading searches (search within the files of the subsequent search), Canvas mode, File explore mode, Treemap (based on LOC) mode, Diff, edit files inside the web UI. Scrub through time. Plus a a simple CLI interface if you don't dig the web one. Link below.
