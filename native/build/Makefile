@@ -294,6 +294,30 @@ hyprclj_layouts.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/hyprclj.dir/build.make CMakeFiles/hyprclj.dir/hyprclj_layouts.cpp.s
 .PHONY : hyprclj_layouts.cpp.s
 
+hyprclj_rectangle.o: hyprclj_rectangle.cpp.o
+.PHONY : hyprclj_rectangle.o
+
+# target to build an object file
+hyprclj_rectangle.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/hyprclj.dir/build.make CMakeFiles/hyprclj.dir/hyprclj_rectangle.cpp.o
+.PHONY : hyprclj_rectangle.cpp.o
+
+hyprclj_rectangle.i: hyprclj_rectangle.cpp.i
+.PHONY : hyprclj_rectangle.i
+
+# target to preprocess a source file
+hyprclj_rectangle.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/hyprclj.dir/build.make CMakeFiles/hyprclj.dir/hyprclj_rectangle.cpp.i
+.PHONY : hyprclj_rectangle.cpp.i
+
+hyprclj_rectangle.s: hyprclj_rectangle.cpp.s
+.PHONY : hyprclj_rectangle.s
+
+# target to generate assembly for a file
+hyprclj_rectangle.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/hyprclj.dir/build.make CMakeFiles/hyprclj.dir/hyprclj_rectangle.cpp.s
+.PHONY : hyprclj_rectangle.cpp.s
+
 hyprclj_text.o: hyprclj_text.cpp.o
 .PHONY : hyprclj_text.o
 
@@ -394,6 +418,9 @@ help:
 	@echo "... hyprclj_layouts.o"
 	@echo "... hyprclj_layouts.i"
 	@echo "... hyprclj_layouts.s"
+	@echo "... hyprclj_rectangle.o"
+	@echo "... hyprclj_rectangle.i"
+	@echo "... hyprclj_rectangle.s"
 	@echo "... hyprclj_text.o"
 	@echo "... hyprclj_text.i"
 	@echo "... hyprclj_text.s"

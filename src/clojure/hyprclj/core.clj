@@ -111,17 +111,22 @@
    Args:
      window - The window
      component-fn - A function that takes [width height] and returns a component spec
+     opts - Optional map with:
+            :position - :absolute to pin to top-left, :auto (default) for centered
 
    Example:
      (enable-responsive-root! window
        (fn [[w h]]
          [:column {:gap 10}
-           [:text (str \"Window is \" w \"x\" h)]]))"
+           [:text (str \"Window is \" w \"x\" h)]])
+       {:position :absolute})"
   ([window]
    ;; Old signature for backwards compatibility - does nothing useful
    (println "[WARN] enable-responsive-root! called without component-fn")
    window)
   ([window component-fn]
+   (enable-responsive-root! window component-fn {}))
+  ([window component-fn opts]
    (let [root (root-element window)
          rendered-size (atom nil)
          pending-size (atom nil)
@@ -151,7 +156,7 @@
                        (try
                          (require 'hyprclj.dsl)
                          (let [mount-fn (resolve 'hyprclj.dsl/mount!)]
-                           (mount-fn root (component-fn [w h]) [w h])
+                           (mount-fn root (component-fn [w h]) [w h] opts)
                            (reset! rendered-size [w h]))
                          (catch Exception e
                            (println "[ERROR]" (.getMessage e)))

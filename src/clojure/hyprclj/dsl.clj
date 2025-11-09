@@ -3,7 +3,8 @@
    Provides a Reagent-like syntax for building UIs."
   (:require [hyprclj.elements :as el]
             [hyprclj.reactive :as r]
-            [hyprclj.layout :as layout]))
+            [hyprclj.layout :as layout]
+            [hyprclj.layout-system :as ls]))
 
 ;; Component registry
 (defonce ^:private components (atom {}))
@@ -72,40 +73,52 @@
           ;; Check if first item after tag is a props map
           [props children] (if (and (seq args) (map? (first args)))
                              [(first args) (vec (clojure.core/rest args))]
-                             [{} (vec args)])]
+                             [{} (vec args)])
+          ;; Support :children prop - if present, use it instead of rest args
+          final-children (if (:children props)
+                          (:children props)
+                          children)
+          ;; Remove :children from props before passing to element constructors
+          final-props (dissoc props :children)]
 
       (cond
         ;; Custom component from registry
         (and (keyword? tag) (@components tag))
         (let [component-fn (@components tag)]
-          (compile-element (apply component-fn props (vec children))))
+          (compile-element (apply component-fn final-props (vec final-children))))
 
         ;; Component function
         (fn? tag)
-        (compile-element (apply tag props (vec children)))
+        (compile-element (apply tag final-props (vec final-children)))
 
         ;; Built-in elements
         :else
         (let [element (case tag
-                        :button (el/button props)
-                        :text (el/text props)
-                        :textbox (el/textbox props)
-                        :checkbox (el/checkbox props)
-                        :column (el/column-layout props)
-                        :row (el/row-layout props)
-                        ;; Re-com style layout components
-                        :v-box (layout/v-box props)
-                        :h-box (layout/h-box props)
-                        :box (layout/box props)
-                        :gap (layout/gap props)
-                        :spacer (layout/spacer props)
-                        :line (layout/line (:direction props :horizontal) props)
+                        :button (el/button final-props)
+                        :colored-button (ls/colored-button final-props)
+                        :text (el/text final-props)
+                        :textbox (el/textbox final-props)
+                        :checkbox (el/checkbox final-props)
+                        :rectangle (el/rectangle final-props)
+                        :column (el/column-layout final-props)
+                        :row (el/row-layout final-props)
+                        ;; NEW Re-com style layout with positioning support
+                        :v-box (ls/v-box final-props)
+                        :h-box (ls/h-box final-props)
+                        :box (ls/box final-props)
+                        ;; OLD re-com compatibility
+                        :v-box-old (layout/v-box final-props)
+                        :h-box-old (layout/h-box final-props)
+                        :box-old (layout/box final-props)
+                        :gap (layout/gap final-props)
+                        :spacer (layout/spacer final-props)
+                        :line (layout/line (:direction final-props :horizontal) final-props)
                         ;; Default: try as text
                         (el/text {:content (str tag)}))]
 
           ;; Add children
-          (when (seq children)
-            (compile-children element children))
+          (when (seq final-children)
+            (compile-children element final-children))
 
           element)))))
 
@@ -135,6 +148,8 @@
        (el/add-child! parent compiled)))
    parent)
   ([parent component window-size]
+   (mount! parent component window-size {}))
+  ([parent component window-size opts]
    (el/clear-children! parent)
    (if (and window-size (vector? component))
      ;; Merge window size into the root component's props
@@ -144,14 +159,22 @@
            has-props? (map? props-or-child)
            props (if has-props? props-or-child {})
            children (if has-props? rest-args (cons props-or-child rest-args))
-           ;; Merge size into props
-           new-props (assoc props :size [w h])
+           ;; Merge size into props (but NOT for absolute positioning!)
+           new-props (if (= (:position opts) :absolute)
+                       props  ; Don't set size for absolute - let it be natural
+                       (assoc props :size [w h]))
            new-component (vec (cons tag (cons new-props children)))]
        (let [compiled (compile-element new-component)]
          (when compiled
-           ;; NOTE: Not forcing positioning - let user props control layout!
-           ;; Users can add :align, :margin, etc. as needed
-           (el/add-child! parent compiled))))
+           (if (= (:position opts) :absolute)
+             ;; Absolute positioning: pin to (0, 0) with natural size
+             (do
+               (el/set-position-mode! compiled 0)
+               (el/set-absolute-position! compiled 0 0)
+               (el/set-margin! compiled 0)
+               (el/add-child! parent compiled))
+             ;; Auto positioning: centered with explicit size
+             (el/add-child! parent compiled)))))
      ;; No window-size or not a vector, mount normally
      (let [compiled (if (fn? component)
                       (compile-element (component))

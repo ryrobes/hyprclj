@@ -1,6 +1,6 @@
 (ns hyprclj.elements
   "UI element constructors and utilities."
-  (:import [org.hyprclj.bindings Element Button Text ColumnLayout RowLayout Textbox Checkbox]))
+  (:import [org.hyprclj.bindings Element Button Text ColumnLayout RowLayout Textbox Checkbox Rectangle]))
 
 ;; Element utilities
 (defn add-child!
@@ -301,6 +301,53 @@
       (when grow
         (set-grow! cb grow))
       cb)))
+
+;; Rectangle
+(defn rectangle
+  "Create a rectangle element (for backgrounds/borders).
+
+   Options:
+     :color        - [r g b a] or [r g b] background color (0-255)
+     :border-color - [r g b a] or [r g b] border color
+     :border       - Border thickness in pixels
+     :rounding     - Corner rounding in pixels
+     :size         - [width height]
+     :margin       - Margin
+     :grow         - Whether to grow
+
+   Example:
+     (rectangle {:color [100 100 200 255]
+                 :border-color [255 0 0 255]
+                 :border 2
+                 :size [100 100]})"
+  [{:keys [color border-color border rounding size margin grow]
+    :or {color [255 255 255 255] border 0 rounding 0}}]
+  (let [builder (Rectangle/builder)
+        [r g b a] (if (= 3 (count color))
+                    (conj (vec color) 255)
+                    color)
+        [br bg bb ba] (if border-color
+                        (if (= 3 (count border-color))
+                          (conj (vec border-color) 255)
+                          border-color)
+                        [0 0 0 255])]
+    (.color builder r g b a)
+    (when (and border-color (pos? border))
+      (.borderColor builder br bg bb ba)
+      (.borderThickness builder border))
+    (when (pos? rounding)
+      (.rounding builder rounding))
+    (when size
+      (let [[w h] size]
+        (.size builder w h)))
+    (let [rect (.build builder)]
+      (when margin
+        (if (vector? margin)
+          (apply set-margin! rect margin)
+          (set-margin! rect margin)))
+      (when grow
+        (set-grow! rect grow))
+      rect)))
 
 ;; Helper to add multiple children
 (defn add-children!
