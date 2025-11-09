@@ -100,6 +100,8 @@
                         :textbox (el/textbox final-props)
                         :checkbox (el/checkbox final-props)
                         :rectangle (el/rectangle final-props)
+                        :scroll-area (el/scroll-area final-props)
+                        :scrollable (el/scroll-area final-props)  ; Alias
                         :column (el/column-layout final-props)
                         :row (el/row-layout final-props)
                         ;; NEW Re-com style layout with positioning support

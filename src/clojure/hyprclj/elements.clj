@@ -1,6 +1,6 @@
 (ns hyprclj.elements
   "UI element constructors and utilities."
-  (:import [org.hyprclj.bindings Element Button Text ColumnLayout RowLayout Textbox Checkbox Rectangle]))
+  (:import [org.hyprclj.bindings Element Button Text ColumnLayout RowLayout Textbox Checkbox Rectangle ScrollArea]))
 
 ;; Element utilities
 (defn add-child!
@@ -348,6 +348,38 @@
       (when grow
         (set-grow! rect grow))
       rect)))
+
+(defn scroll-area
+  "Create a scrollable area (container).
+
+   Options:
+     :scroll-x - Enable horizontal scrolling (default false)
+     :scroll-y - Enable vertical scrolling (default true)
+     :block-scroll - Disable user scrolling (default false)
+     :size - [width height] required!
+     :margin - Margin
+     :grow - Whether to grow
+
+   Example:
+     (scroll-area {:scroll-y true :size [400 300]})"
+  [{:keys [scroll-x scroll-y block-scroll size margin grow]
+    :or {scroll-x false scroll-y true block-scroll false}}]
+  (let [builder (ScrollArea/builder)]
+    (.scrollX builder scroll-x)
+    (.scrollY builder scroll-y)
+    (when block-scroll
+      (.blockUserScroll builder true))
+    (when size
+      (let [[w h] size]
+        (.size builder w h)))
+    (let [scroll (.build builder)]
+      (when margin
+        (if (vector? margin)
+          (apply set-margin! scroll margin)
+          (set-margin! scroll margin)))
+      (when grow
+        (set-grow! scroll grow))
+      scroll)))
 
 ;; Helper to add multiple children
 (defn add-children!
