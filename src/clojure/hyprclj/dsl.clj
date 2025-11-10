@@ -114,7 +114,10 @@
                         :box-old (layout/box final-props)
                         :gap (layout/gap final-props)
                         :spacer (layout/spacer final-props)
-                        :line (layout/line (:direction final-props :horizontal) final-props)
+                        ;; Line: distinguish between drawing line (with :points) and layout separator
+                        :line (if (:points final-props)
+                                (el/line final-props)  ; Drawing primitive
+                                (layout/line (:direction final-props :horizontal) final-props))  ; Layout separator
                         ;; Default: try as text
                         (el/text {:content (str tag)}))]
 

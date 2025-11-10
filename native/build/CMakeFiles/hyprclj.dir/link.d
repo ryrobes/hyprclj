@@ -11,6 +11,7 @@
   CMakeFiles/hyprclj.dir/hyprclj_checkbox.cpp.o \
   CMakeFiles/hyprclj.dir/hyprclj_rectangle.cpp.o \
   CMakeFiles/hyprclj.dir/hyprclj_scrollarea.cpp.o \
+  CMakeFiles/hyprclj.dir/hyprclj_line.cpp.o \
   /usr/lib/jvm/default/lib/libjawt.so \
   /usr/lib/jvm/default/lib/server/libjvm.so \
   /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/libhyprtoolkit.so \
@@ -65,6 +66,8 @@ CMakeFiles/hyprclj.dir/hyprclj_checkbox.cpp.o:
 CMakeFiles/hyprclj.dir/hyprclj_rectangle.cpp.o:
 
 CMakeFiles/hyprclj.dir/hyprclj_scrollarea.cpp.o:
+
+CMakeFiles/hyprclj.dir/hyprclj_line.cpp.o:
 
 /usr/lib/jvm/default/lib/libjawt.so:
 

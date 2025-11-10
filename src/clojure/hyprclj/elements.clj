@@ -1,6 +1,6 @@
 (ns hyprclj.elements
   "UI element constructors and utilities."
-  (:import [org.hyprclj.bindings Element Button Text ColumnLayout RowLayout Textbox Checkbox Rectangle ScrollArea]))
+  (:import [org.hyprclj.bindings Element Button Text ColumnLayout RowLayout Textbox Checkbox Rectangle ScrollArea Line]))
 
 ;; Element utilities
 (defn add-child!
@@ -380,6 +380,49 @@
       (when grow
         (set-grow! scroll grow))
       scroll)))
+
+;; Line
+(defn line
+  "Create a line element (for charts/graphs).
+
+   Options:
+     :points - Vector of [x y] coordinates, normalized 0-1
+               [[0 0] [0.5 0.3] [1 0.1]]
+               [0 0] = top-left, [1 1] = bottom-right
+     :color  - [r g b a] or [r g b] line color (0-255)
+     :thick  - Line thickness in pixels
+     :size   - [width height] required!
+     :margin - Margin
+     :grow   - Whether to grow
+
+   Example:
+     (line {:points [[0 0] [0.5 0.3] [1 0.1]]
+            :color [100 150 255 255]
+            :thick 2
+            :size [300 200]})"
+  [{:keys [points color thick size margin grow]
+    :or {points [] color [255 255 255 255] thick 1}}]
+  (let [builder (Line/builder)
+        [r g b a] (if (= 3 (count color))
+                    (conj (vec color) 255)
+                    color)
+        ;; Convert points to double[][] - ensure all numbers are doubles
+        points-array (into-array
+                       (map #(double-array (map double %)) points))]
+    (.color builder r g b a)
+    (.thick builder thick)
+    (.points builder points-array)
+    (when size
+      (let [[w h] size]
+        (.size builder w h)))
+    (let [ln (.build builder)]
+      (when margin
+        (if (vector? margin)
+          (apply set-margin! ln margin)
+          (set-margin! ln margin)))
+      (when grow
+        (set-grow! ln grow))
+      ln)))
 
 ;; Helper to add multiple children
 (defn add-children!
