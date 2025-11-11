@@ -15,7 +15,7 @@ JNIEXPORT jlong JNICALL
 Java_org_hyprclj_bindings_Text_00024Builder_nativeCreate(
     JNIEnv* env, jclass clazz,
     jstring content, jint fontSize, jstring fontFamily,
-    jint r, jint g, jint b, jint a, jstring align) {
+    jint r, jint g, jint b, jint a, jstring align, jfloat alpha) {
 
     try {
         const char* contentChars = env->GetStringUTFChars(content, nullptr);
@@ -42,6 +42,9 @@ Java_org_hyprclj_bindings_Text_00024Builder_nativeCreate(
         builder->color([r, g, b, a]() {
             return CHyprColor((float)r/255.0f, (float)g/255.0f, (float)b/255.0f, (float)a/255.0f);
         });
+
+        // Set separate alpha multiplier for fade effects
+        builder->a(alpha);
 
         auto text = builder->commence();
         if (!text) {

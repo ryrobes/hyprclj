@@ -140,7 +140,8 @@
      :content      - Text content
      :font-size    - Font size in pixels
      :font-family  - Font family name
-     :color        - [r g b a] or [r g b] (0-255)
+     :color        - [r g b a] or [r g b] (0-255) or hex string
+     :alpha        - Separate opacity multiplier (0.0-1.0, default 1.0)
      :align        - Text alignment (\"left\", \"center\", \"right\")
      :margin       - Margin
      :grow         - Whether to grow
@@ -148,9 +149,10 @@
    Example:
      (text {:content \"Hello, World!\"
             :font-size 24
-            :color [255 255 255]})"
-  [{:keys [content font-size font-family color align margin grow]
-    :or {content "" font-size 12 align "left"}}]
+            :color [255 255 255]})
+     (text {:content \"Faded\" :alpha 0.5})"
+  [{:keys [content font-size font-family color alpha align margin grow]
+    :or {content "" font-size 12 align "left" alpha 1.0}}]
   (let [builder (Text/builder)
         [r g b a] (or color [255 255 255 255])]
     (.content builder content)
@@ -158,6 +160,7 @@
     (when font-family
       (.fontFamily builder font-family))
     (.color builder r g b (or a 255))
+    (.alpha builder (float alpha))
     (.align builder align)
     (let [txt (.build builder)]
       (when margin
@@ -307,10 +310,11 @@
   "Create a rectangle element (for backgrounds/borders).
 
    Options:
-     :color        - [r g b a] or [r g b] background color (0-255)
-     :border-color - [r g b a] or [r g b] border color
+     :color        - [r g b a] or [r g b] or hex string background color
+     :border-color - [r g b a] or [r g b] or hex string border color
      :border       - Border thickness in pixels
      :rounding     - Corner rounding in pixels
+     :alpha        - Separate opacity multiplier (0.0-1.0, default 1.0)
      :size         - [width height]
      :margin       - Margin
      :grow         - Whether to grow
@@ -319,9 +323,10 @@
      (rectangle {:color [100 100 200 255]
                  :border-color [255 0 0 255]
                  :border 2
-                 :size [100 100]})"
-  [{:keys [color border-color border rounding size margin grow]
-    :or {color [255 255 255 255] border 0 rounding 0}}]
+                 :size [100 100]})
+     (rectangle {:color \"#FF5733\" :alpha 0.5 :size [100 100]})"
+  [{:keys [color border-color border rounding alpha size margin grow]
+    :or {color [255 255 255 255] border 0 rounding 0 alpha 1.0}}]
   (let [builder (Rectangle/builder)
         [r g b a] (if (= 3 (count color))
                     (conj (vec color) 255)
@@ -337,6 +342,7 @@
       (.borderThickness builder border))
     (when (pos? rounding)
       (.rounding builder rounding))
+    (.alpha builder (float alpha))
     (when size
       (let [[w h] size]
         (.size builder w h)))

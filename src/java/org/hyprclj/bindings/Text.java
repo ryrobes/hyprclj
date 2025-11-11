@@ -15,6 +15,7 @@ public class Text extends Element {
         private String fontFamily = "";
         private int r = 255, g = 255, b = 255, a = 255;  // White by default
         private String align = "left";
+        private float alpha = 1.0f;  // Separate opacity multiplier (0.0-1.0)
 
         public Builder content(String content) {
             this.content = content;
@@ -48,10 +49,15 @@ public class Text extends Element {
             return this;
         }
 
+        public Builder alpha(float alpha) {
+            this.alpha = Math.max(0.0f, Math.min(1.0f, alpha));
+            return this;
+        }
+
         public Text build() {
             long handle = nativeCreate(
                 content, fontSize, fontFamily,
-                r, g, b, a, align
+                r, g, b, a, align, alpha
             );
             if (handle == 0) {
                 throw new RuntimeException("Failed to create text element");
@@ -61,7 +67,7 @@ public class Text extends Element {
 
         private static native long nativeCreate(
             String content, int fontSize, String fontFamily,
-            int r, int g, int b, int a, String align
+            int r, int g, int b, int a, String align, float alpha
         );
     }
 

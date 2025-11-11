@@ -14,7 +14,7 @@ Java_org_hyprclj_bindings_Rectangle_00024Builder_nativeCreate(
     jint r, jint g, jint b, jint a,
     jint borderR, jint borderG, jint borderB, jint borderA,
     jint borderThickness, jint rounding,
-    jint width, jint height) {
+    jint width, jint height, jfloat alpha) {
 
     try {
         auto builder = CRectangleBuilder::begin();
@@ -50,6 +50,9 @@ Java_org_hyprclj_bindings_Rectangle_00024Builder_nativeCreate(
         if (!rect) {
             return 0;
         }
+
+        // Note: Rectangle doesn't have .a() method in Hyprtoolkit API
+        // Alpha will be controlled via the color's alpha channel only
 
         return reinterpret_cast<jlong>(new auto(rect));
     } catch (const std::exception& e) {

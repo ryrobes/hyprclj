@@ -123,7 +123,7 @@ This proves:
 - Wayland connection established
 - **The full stack is functional!**
 
-## 📊 Code Statistics
+##  Code Statistics
 
 - **Total Files**: 28
 - **Total Lines**: ~3,900

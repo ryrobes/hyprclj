@@ -16,6 +16,7 @@ public class Rectangle extends Element {
         private int rounding = 0;
         private int width = -1;
         private int height = -1;
+        private float alpha = 1.0f;  // Separate opacity multiplier (0.0-1.0)
 
         public Builder color(int r, int g, int b, int a) {
             this.r = r;
@@ -49,12 +50,17 @@ public class Rectangle extends Element {
             return this;
         }
 
+        public Builder alpha(float alpha) {
+            this.alpha = Math.max(0.0f, Math.min(1.0f, alpha));
+            return this;
+        }
+
         public Rectangle build() {
             long handle = nativeCreate(
                 r, g, b, a,
                 borderR, borderG, borderB, borderA,
                 borderThickness, rounding,
-                width, height
+                width, height, alpha
             );
             if (handle == 0) {
                 throw new RuntimeException("Failed to create rectangle");
@@ -66,7 +72,7 @@ public class Rectangle extends Element {
             int r, int g, int b, int a,
             int borderR, int borderG, int borderB, int borderA,
             int borderThickness, int rounding,
-            int width, int height
+            int width, int height, float alpha
         );
     }
 

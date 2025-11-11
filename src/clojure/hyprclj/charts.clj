@@ -3,7 +3,8 @@
 
    Provides helper functions to create charts and graphs from raw data
    using the native Line and Rectangle primitives."
-  (:require [hyprclj.elements :as el]))
+  (:require [hyprclj.elements :as el]
+            [hyprclj.dsl :as dsl]))
 
 ;; ===== Data Normalization =====
 
@@ -97,9 +98,9 @@
                :size [width height]
                :align :bottom
                :margin (or margin 0)
-               :children (for [norm-val normalized]
-                          [:rectangle {:color color
-                                       :size [bar-width (* norm-val height)]}])}])))
+               :children (vec (for [norm-val normalized]
+                               [:rectangle {:color color
+                                            :size [bar-width (* norm-val height)]}]))}])))
 
 ;; ===== Sparkline (Mini Chart) =====
 
@@ -149,11 +150,14 @@
                       :bg-color [50 50 50 100]})]"
   [{:keys [value width height color bg-color rounding margin]
     :or {color [100 200 100 255] bg-color [50 50 50 100] value 0 rounding 5}}]
-  (let [fill-width (* (/ value 100.0) width)]
-    [:v-box {:size [width height] :margin (or margin 0)}
-     [:rectangle {:color bg-color :size [width height] :rounding rounding}]
-     (when (pos? fill-width)
-       [:rectangle {:color color :size [fill-width height] :rounding rounding}])]))
+  (let [fill-width (max 1 (* (/ value 100.0) width))]
+    ;; Simple progress bar - just the filled portion with a border to show the container
+    [:rectangle {:color color
+                 :border-color bg-color
+                 :border 2
+                 :size [fill-width height]
+                 :rounding rounding
+                 :margin (or margin 0)}]))
 
 ;; ===== Multi-line Chart =====
 
@@ -175,17 +179,28 @@
                   :color [100 100 255 255]
                   :thick 2}]
         :width 400
-        :height 300})"
+        :height 300})
+
+   NOTE: Multi-line charts are rendered programmatically to enable proper layering.
+   Returns a compiled element, not hiccup."
   [{:keys [series width height background margin]
     :or {margin 0}}]
   (when (seq series)
-    [:v-box {:size [width height]
-             :margin margin
-             :children
-             (for [{:keys [data color thick] :or {thick 2}} series]
-               (when (seq data)
-                 (let [points (data->line-points data)]
-                   [:line {:points points :color color :thick thick :size [width height]}])))}]))
+    ;; Create a container to hold all layers - use row with gap 0
+    ;; and position each line absolutely to layer them
+    (let [container (el/rectangle {:color [0 0 0 0]  ; Transparent container
+                                    :size [width height]
+                                    :margin margin})]
+      ;; Add each line as a child with absolute positioning
+      (doseq [{:keys [data color thick] :or {thick 2}} series]
+        (when (seq data)
+          (let [points (data->line-points data)
+                line-elem (el/line {:points points :color color :thick thick :size [width height]})]
+            ;; Set absolute positioning so lines overlap instead of stacking
+            (el/set-position-mode! line-elem 0)       ; 0 = HT_POSITION_ABSOLUTE
+            (el/set-absolute-position! line-elem 0 0) ; Position at (0,0)
+            (el/add-child! container line-elem))))
+      container)))
 
 ;; ===== Helper: Add Grid Lines =====
 

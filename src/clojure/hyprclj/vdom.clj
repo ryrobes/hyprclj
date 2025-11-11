@@ -94,8 +94,8 @@
         order-changed? (not= (filter kept-keys new-key-order)
                             (filter kept-keys old-key-order))]
 
-    (println "[VDOM] Reconcile:" (count old-vnodes) "old →" (count new-vnodes-with-keys) "new"
-             "| Added:" (count added-keys) "Deleted:" (count deleted-keys) "Kept:" (count kept-keys))
+    ;; (println "[superDOM] Reconcile:" (count old-vnodes) "old →" (count new-vnodes-with-keys) "new"
+    ;;          "| Added:" (count added-keys) "Deleted:" (count deleted-keys) "Kept:" (count kept-keys))
 
     ;; If order changed, do full rebuild (simpler than complex reordering)
     (if (and order-changed? (seq kept-keys))
@@ -139,7 +139,7 @@
                         old-vnode)
                       ;; Changed - rebuild with delayed removal (anti-flicker)
                       (do
-                        (println "[VDOM]   🔄 Rebuild key" key)
+                        (println "[superDOM]    Rebuild key" key)
                         (let [old-elem (:native-element old-vnode)
                               new-elem (dsl/compile-element hiccup)]
                           ;; DOUBLE BUFFER: Add new, then async remove old
@@ -190,10 +190,10 @@
      (add-watch app-state :vdom-reconcile
        (fn [_ _ old-state new-state]
          (when (not= old-state new-state)
-           (println "[VDOM] 📊 State changed" (keys (filter (fn [[k v]] (not= (get old-state k) v)) new-state)))
+           ;(println "[VDOM]  State changed" (keys (filter (fn [[k v]] (not= (get old-state k) v)) new-state)))
            ;; TRIPLE BUFFER: Clean up elements from PREVIOUS update first
            (when (seq @pending-cleanup)
-             (println "[VDOM] 🧹 Cleanup" (count @pending-cleanup) "old elements from previous update")
+             ;(println "[VDOM] 🧹 Cleanup" (count @pending-cleanup) "old elements from previous update")
              (doseq [elem @pending-cleanup]
                (el/remove-child! parent elem))
              (reset! pending-cleanup []))

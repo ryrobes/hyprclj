@@ -4,7 +4,8 @@
   (:require [hyprclj.elements :as el]
             [hyprclj.reactive :as r]
             [hyprclj.layout :as layout]
-            [hyprclj.layout-system :as ls]))
+            [hyprclj.layout-system :as ls]
+            [hyprclj.color :as color]))
 
 ;; Component registry
 (defonce ^:private components (atom {}))
@@ -24,6 +25,25 @@
   [x]
   (or (keyword? x)
       (fn? x)))
+
+(defn- normalize-colors
+  "Normalize color properties in a props map.
+
+   Converts hex strings to [r g b a] vectors for all color-related keys.
+   Keys that are normalized: :color, :background, :bg-color, :border-color
+
+   Examples:
+     {:color \"#FF5733\"} => {:color [255 87 51 255]}
+     {:color \"#FF573380\"} => {:color [255 87 51 128]}
+     {:color [255 0 0]} => {:color [255 0 0 255]}"
+  [props]
+  (let [color-keys [:color :background :bg-color :border-color]]
+    (reduce (fn [m k]
+              (if-let [c (get m k)]
+                (assoc m k (color/normalize-color c))
+                m))
+            props
+            color-keys)))
 
 (declare compile-element)
 
@@ -79,7 +99,10 @@
                           (:children props)
                           children)
           ;; Remove :children from props before passing to element constructors
-          final-props (dissoc props :children)]
+          ;; Also normalize any color properties (hex strings -> [r g b a] vectors)
+          final-props (-> props
+                          (dissoc :children)
+                          normalize-colors)]
 
       (cond
         ;; Custom component from registry
